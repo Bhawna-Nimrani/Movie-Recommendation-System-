@@ -39,3 +39,9 @@ Run the app locally with streamlit run app.py.
 User Authentication
 Advanced Filtering Options
 Integration with movie databases
+
+
+
+Refer the dataset from here:-  https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata
+
+Reference Video :-https://www.youtube.com/watch?v=1xtrIEwY_zY&t=2s
