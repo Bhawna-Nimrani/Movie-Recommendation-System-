@@ -1,0 +1,12 @@
+[server]
+maxUploadSize = 1000
+enableXsrfProtection = false
+enableCORS = false
+fileWatcherType = "none"
+
+[browser]
+gatherUsageStats = false
+
+[runner]
+magicEnabled = false
+fastReruns = false
