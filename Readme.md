@@ -1,47 +1,167 @@
-🎬 Movie Recommender System
-A content-based movie recommendation web app built with machine learning! This application helps users discover movies based on their interests, allowing them to explore similar films effortlessly.
+# 🎬 CineMatch – AI-Powered Movie Recommendation System
 
-🚀 Features
-Movie Suggestions: Get movie recommendations based on similar genres, actors, directors, and plot.
+A **content-based movie recommendation web application** built using **machine learning and NLP**, designed to help users discover movies similar to their interests. CineMatch supports **Hollywood and Bollywood cinema**, including **Hindi, Tamil, and Telugu** movies, and is deployed as a live Streamlit application.
 
-Intelligent Search: Find movies with similar themes or by keywords.
+🌐 **Live Demo:** [https://cinematch-ai-powered-movie-recommender.streamlit.app/](https://cinematch-ai-powered-movie-recommender.streamlit.app/)
 
-Interactive UI: Built with Streamlit for a responsive and intuitive user experience.
+---
 
-Poster Visualization: Quickly identify movies through posters fetched via API.
+## 🚀 Features
 
-User Feedback: Gather user input to improve recommendation quality over time.
+### 🎯 Core Functionality
 
+* **Multi-Industry Support**: Hollywood, Hindi, Tamil, and Telugu movies
+* **Smart Movie Recommendations**: Suggestions based on genres, cast, crew, keywords, and plot overview
+* **Content-Based Filtering**: Uses NLP and similarity metrics to match movies
+* **Intelligent Search**: Select a movie and instantly get similar recommendations
+* **Real-Time Poster Fetching**: Movie posters fetched dynamically via APIs
+* **Ratings Integration**: IMDb / TMDb ratings for better decision-making
 
-🛠 Tech Stack
-Python (Pandas, Scikit-learn, NLTK, Requests)
-Streamlit for the web interface
-Machine Learning with Count Vectorizer, cosine similarity
-Data Serialization using Pickle
+### 🎨 User Experience
 
-📂 Project Structure
-Data Processing: Movie data processed using Natural Language Toolkit and Scikit-learn.
-Machine Learning Model: Generates recommendations based on user preferences.
-Web Interface: Streamlit app for real-time user interaction.
+* **Netflix-Inspired Dark UI**
+* **Tabbed Navigation** for Hollywood and Bollywood sections
+* **Interactive & Responsive Interface** built with Streamlit
+* **Fast Autocomplete Dropdown** for movie selection
 
-📈 How It Works
-Data Preprocessing: The dataset is parsed using NLP techniques to extract essential features.
-Vectorization: Movies are vectorized based on key features (genres, actors, etc.) for similarity comparison.
-Recommendation Engine: Uses cosine similarity to suggest movies similar to the user's selections.
-Feedback Loop: Collects feedback to refine and enhance the recommendation accuracy.
+---
 
-🌟 Getting Started
-Clone the repository.
-Install dependencies using pip install -r requirements.txt.
-Run the app locally with streamlit run app.py.
+## 🛠 Tech Stack
 
-📝 Future Enhancements
-User Authentication
-Advanced Filtering Options
-Integration with movie databases
+### Backend & ML
 
+* **Python**
+* **Pandas** – Data manipulation
+* **Scikit-learn** – Count Vectorizer, TF-IDF, cosine similarity
+* **NLTK** – Text preprocessing and NLP
+* **NumPy** – Numerical operations
+* **Pickle** – Model serialization
 
+### Frontend
 
-Refer the dataset from here:-  https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata
+* **Streamlit** – Web application framework
+* **Custom CSS** – Enhanced UI/UX
 
-Reference Video :-https://www.youtube.com/watch?v=1xtrIEwY_zY&t=2s
+### APIs & Data
+
+* **TMDb API** – Movie metadata & posters
+* **OMDb API** – Ratings and additional movie details
+
+---
+
+## 📂 Project Structure
+
+```
+Movie-Recommendation-System-/
+├── app.py                          # Main Streamlit application
+├── requirements.txt                # Python dependencies
+├── packages.txt                    # System-level dependencies
+├── .streamlit/
+│   └── config.toml                # Streamlit configuration
+├── movie_dict.pkl                 # Hollywood movie dataset
+├── similarity.pkl                 # Hollywood similarity matrix
+├── bollywood_movie_dict.pkl       # Bollywood movie dataset
+├── bollywood_similarity.pkl       # Bollywood similarity matrix
+├── complete_bollywood_pipeline.py # Bollywood data processing script
+└── README.md                      # Project documentation
+```
+
+---
+
+## 📈 How It Works
+
+### 1️⃣ Data Preprocessing
+
+* Movie datasets are cleaned and processed using **NLP techniques**
+* Important features extracted:
+
+  * Genres
+  * Cast
+  * Crew (Director)
+  * Keywords
+  * Plot Overview
+
+### 2️⃣ Feature Engineering
+
+* Text features are combined into a **single smart content column**
+* Vectorization performed using **Count Vectorizer / TF-IDF**
+* Feature weighting applied to prioritize genres and keywords
+
+### 3️⃣ Similarity Computation
+
+* **Cosine Similarity** is used to calculate movie-to-movie similarity
+* Separate similarity matrices for Hollywood and Bollywood datasets
+
+### 4️⃣ Recommendation Engine
+
+* User selects a movie
+* Top similar movies are retrieved based on similarity scores
+* Posters and ratings fetched in real-time using APIs
+
+---
+
+## 🌟 Getting Started
+
+### Prerequisites
+
+* Python 3.11+
+* Git
+* pip
+
+### Installation
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/Bhawna-Nimrani/Movie-Recommendation-System-.git
+cd Movie-Recommendation-System-
+```
+
+2. **Install dependencies**
+
+```bash
+pip install -r requirements.txt
+```
+
+3. **Run the application**
+
+```bash
+streamlit run app.py
+```
+
+4. **Open in browser**
+
+* App will run at `http://localhost:8501`
+
+---
+
+## 📝 Future Enhancements
+
+* User Authentication & Profiles
+* Watchlist and Favorites Feature
+* Advanced Filters (Actor, Director, Year)
+* Hybrid Recommendation System
+* Trailer Integration
+* Feedback-Based Model Improvement
+
+---
+
+## 📊 Dataset & References
+
+* **Dataset**: TMDb Movie Metadata (Kaggle)
+  [https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata](https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata)
+
+* **Reference Tutorial**:
+  [https://www.youtube.com/watch?v=1xtrIEwY_zY&t=2s](https://www.youtube.com/watch?v=1xtrIEwY_zY&t=2s)
+
+---
+
+## 👤 Author
+
+**Bhawna Nimrani**
+GitHub: [https://github.com/Bhawna-Nimrani](https://github.com/Bhawna-Nimrani)
+
+---
+
+⭐ *If you like this project, don’t forget to star the repository!*
+Made with ❤️ using Python, Machine Learning, and Streamlit
