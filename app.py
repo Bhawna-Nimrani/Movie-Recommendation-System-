@@ -264,7 +264,7 @@ def recommend_bollywood(movie, filter_genre=None, year_filter="off", language_fi
     return recommendations
 
 # =========================================================
-# COMPACT CSS + HEADER - FIXED MOBILE
+# COMPACT CSS + HEADER - WORKING MOBILE RESPONSIVE
 # =========================================================
 st.markdown(
     """
@@ -397,8 +397,21 @@ st.markdown(
         font-weight: 700;
     }
 
+    /* CUSTOM MOVIE GRID - THIS IS KEY FOR MOBILE */
+    .movie-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+        margin-top: 12px;
+    }
+
     /* Mobile styles */
     @media (max-width: 768px) {
+        .movie-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 8px !important;
+        }
+        
         .app-title { 
             font-size: 1.3rem;
             text-align: center;
@@ -467,7 +480,7 @@ st.markdown(
 )
 
 # =========================================================
-# CARD DISPLAY - ADAPTIVE FOR MOBILE
+# CARD DISPLAY - PURE HTML GRID (NO STREAMLIT COLUMNS)
 # =========================================================
 def display_recommendations(recommendations):
     if not recommendations:
@@ -476,165 +489,116 @@ def display_recommendations(recommendations):
 
     st.success(f"Top {len(recommendations)} Recommendations")
 
-    # Detect screen size using Streamlit's native method
-    # On mobile, show 2 columns; on desktop, show 5
-    is_mobile = st.session_state.get('mobile_view', False)
+    # Build HTML grid manually - this works on mobile!
+    grid_html = '<div class="movie-grid">'
     
-    # Show only 4 movies on mobile (2x2 grid)
-    if is_mobile:
-        display_recs = recommendations[:4]
-        num_cols = 2
-    else:
-        display_recs = recommendations[:5]
-        num_cols = 5
-    
-    cols = st.columns(num_cols, gap="small")
-
-    for idx, rec in enumerate(display_recs):
-        col_idx = idx % num_cols
-        with cols[col_idx]:
-            st.markdown(
-                f"""
-                <div style="
-                    background:#181818;
-                    border-radius:6px;
-                    overflow:hidden;
-                    cursor:pointer;
-                    transition:transform 0.18s ease, box-shadow 0.18s ease;
-                    box-shadow:0 4px 10px rgba(0,0,0,0.5);
-                    margin-bottom: 8px;
-                " onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.65)';"
-                  onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 10px rgba(0,0,0,0.5)';">
-                    <div style="position:relative;">
-                        <img src="{rec['poster']}" style="
-                            width:100%;
-                            display:block;
-                            aspect-ratio: 2/3;
-                            object-fit:cover;
-                        " />
-                        <div style="
-                            position:absolute;
-                            top:6px;
-                            left:6px;
-                            background:rgba(0,0,0,0.85);
-                            color:#e50914;
-                            padding:3px 7px;
-                            border-radius:3px;
-                            font-weight:700;
-                            font-size:0.6rem;
-                        ">#{idx+1}</div>
-                    </div>
-                    <div style="padding:6px 7px 7px 7px;">
-                        <div style="
-                            color:#fff;
-                            font-weight:600;
-                            font-size:0.78rem;
-                            line-height:1.25;
-                            margin-bottom:3px;
-                            max-height:30px;
-                            display:-webkit-box;
-                            -webkit-line-clamp:2;
-                            -webkit-box-orient:vertical;
-                            overflow:hidden;
-                        ">{rec['title']}</div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-            meta = []
-            if rec.get("year"):
-                meta.append(f"<span style='color:#46d369;'>{rec['year']}</span>")
-            if rec.get("genres"):
-                meta.append(f"<span style='color:#808080;'>{rec['genres'][0]}</span>")
-
-            if meta:
-                st.markdown(
-                    f"<div style='font-size:0.65rem;margin-bottom:3px;'>{' • '.join(meta)}</div>",
-                    unsafe_allow_html=True,
-                )
-
-            rating = rec.get("rating")
-            if rating:
-                if rating >= 8:
-                    color = "#46d369"
-                elif rating >= 7:
-                    color = "#f59e0b"
-                elif rating >= 6:
-                    color = "#f97316"
-                else:
-                    color = "#808080"
-
-                st.markdown(
-                    f"""
-                    <div style="
-                        background:rgba(255,255,255,0.03);
-                        border:1px solid {color};
-                        color:{color};
-                        padding:3px 5px;
-                        border-radius:3px;
-                        font-size:0.68rem;
-                        font-weight:700;
-                        text-align:center;
-                        display:flex;
-                        align-items:center;
-                        justify-content:center;
-                        gap:4px;
-                    ">
-                        <span>⭐</span><span>{rating}/10</span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+    for idx, rec in enumerate(recommendations):
+        # Determine rating color
+        rating = rec.get("rating")
+        if rating:
+            if rating >= 8:
+                color = "#46d369"
+            elif rating >= 7:
+                color = "#f59e0b"
+            elif rating >= 6:
+                color = "#f97316"
             else:
-                st.markdown(
-                    """
+                color = "#808080"
+            rating_html = f'''
+                <div style="
+                    background:rgba(255,255,255,0.03);
+                    border:1px solid {color};
+                    color:{color};
+                    padding:3px 5px;
+                    border-radius:3px;
+                    font-size:0.68rem;
+                    font-weight:700;
+                    text-align:center;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    gap:4px;
+                ">
+                    <span>⭐</span><span>{rating}/10</span>
+                </div>
+            '''
+        else:
+            rating_html = '''
+                <div style="
+                    background:rgba(255,255,255,0.03);
+                    border:1px solid #404040;
+                    color:#808080;
+                    padding:3px 5px;
+                    border-radius:3px;
+                    font-size:0.68rem;
+                    font-weight:600;
+                    text-align:center;
+                ">Not Rated</div>
+            '''
+
+        # Build metadata
+        meta = []
+        if rec.get("year"):
+            meta.append(f"<span style='color:#46d369;'>{rec['year']}</span>")
+        if rec.get("genres"):
+            meta.append(f"<span style='color:#808080;'>{rec['genres'][0]}</span>")
+        
+        meta_html = f"<div style='font-size:0.65rem;margin-bottom:3px;'>{' • '.join(meta)}</div>" if meta else ""
+
+        # Build card
+        card_html = f'''
+            <div style="
+                background:#181818;
+                border-radius:6px;
+                overflow:hidden;
+                cursor:pointer;
+                transition:transform 0.18s ease, box-shadow 0.18s ease;
+                box-shadow:0 4px 10px rgba(0,0,0,0.5);
+            " onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.65)';"
+              onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 10px rgba(0,0,0,0.5)';">
+                <div style="position:relative;">
+                    <img src="{rec['poster']}" style="
+                        width:100%;
+                        display:block;
+                        aspect-ratio: 2/3;
+                        object-fit:cover;
+                    " />
                     <div style="
-                        background:rgba(255,255,255,0.03);
-                        border:1px solid #404040;
-                        color:#808080;
-                        padding:3px 5px;
+                        position:absolute;
+                        top:6px;
+                        left:6px;
+                        background:rgba(0,0,0,0.85);
+                        color:#e50914;
+                        padding:3px 7px;
                         border-radius:3px;
-                        font-size:0.68rem;
+                        font-weight:700;
+                        font-size:0.6rem;
+                    ">#{idx+1}</div>
+                </div>
+                <div style="padding:6px 7px 7px 7px;">
+                    <div style="
+                        color:#fff;
                         font-weight:600;
-                        text-align:center;
-                    ">Not Rated</div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-            st.markdown("</div></div>", unsafe_allow_html=True)
-
-# =========================================================
-# MOBILE DETECTION
-# =========================================================
-# Add a simple viewport width checker
-st.markdown("""
-    <script>
-    function updateMobileStatus() {
-        const isMobile = window.innerWidth <= 768;
-        window.parent.postMessage({
-            type: 'streamlit:setComponentValue',
-            value: isMobile
-        }, '*');
-    }
+                        font-size:0.78rem;
+                        line-height:1.25;
+                        margin-bottom:3px;
+                        max-height:30px;
+                        display:-webkit-box;
+                        -webkit-line-clamp:2;
+                        -webkit-box-orient:vertical;
+                        overflow:hidden;
+                    ">{rec['title']}</div>
+                    {meta_html}
+                    {rating_html}
+                </div>
+            </div>
+        '''
+        
+        grid_html += card_html
     
-    updateMobileStatus();
-    window.addEventListener('resize', updateMobileStatus);
-    </script>
-""", unsafe_allow_html=True)
-
-# Try to detect mobile from user agent as fallback
-try:
-    from streamlit.web.server.websocket_headers import _get_websocket_headers
-    headers = _get_websocket_headers()
-    if headers and 'User-Agent' in headers:
-        user_agent = headers['User-Agent'].lower()
-        is_mobile = any(x in user_agent for x in ['mobile', 'android', 'iphone', 'ipad'])
-        st.session_state['mobile_view'] = is_mobile
-except:
-    # Default to desktop if detection fails
-    if 'mobile_view' not in st.session_state:
-        st.session_state['mobile_view'] = False
+    grid_html += '</div>'
+    
+    st.markdown(grid_html, unsafe_allow_html=True)
 
 # =========================================================
 # SIDEBAR
