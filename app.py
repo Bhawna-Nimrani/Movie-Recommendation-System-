@@ -264,7 +264,7 @@ def recommend_bollywood(movie, filter_genre=None, year_filter="off", language_fi
     return recommendations
 
 # =========================================================
-# COMPACT CSS + HEADER
+# COMPACT CSS + HEADER - FIXED MOBILE
 # =========================================================
 st.markdown(
     """
@@ -397,6 +397,7 @@ st.markdown(
         font-weight: 700;
     }
 
+    /* Mobile styles */
     @media (max-width: 768px) {
         .app-title { 
             font-size: 1.3rem;
@@ -450,30 +451,6 @@ st.markdown(
             padding: 4px 6px;
         }
     }
-
-    /* Force 2 columns on mobile - using container query */
-    @media (max-width: 768px) {
-        /* Force horizontal layout to wrap into 2 columns */
-        [data-testid="stHorizontalBlock"] {
-            flex-wrap: wrap !important;
-            gap: 8px !important;
-        }
-        
-        [data-testid="column"] {
-            width: calc(50% - 4px) !important;
-            flex: 0 0 calc(50% - 4px) !important;
-            min-width: calc(50% - 4px) !important;
-            max-width: calc(50% - 4px) !important;
-        }
-
-        [data-testid="column"]:nth-child(n+5) {
-            display: none !important;
-        }
-        
-        .element-container {
-            width: 100% !important;
-        }
-    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -490,7 +467,7 @@ st.markdown(
 )
 
 # =========================================================
-# CARD DISPLAY (SMALLER POSTERS / TIGHTER CARDS)
+# CARD DISPLAY - ADAPTIVE FOR MOBILE
 # =========================================================
 def display_recommendations(recommendations):
     if not recommendations:
@@ -499,23 +476,23 @@ def display_recommendations(recommendations):
 
     st.success(f"Top {len(recommendations)} Recommendations")
 
-    # Mobile detection script
-    st.markdown("""
-        <script>
-        function checkMobile() {
-            return window.innerWidth <= 768;
-        }
-        </script>
-    """, unsafe_allow_html=True)
+    # Detect screen size using Streamlit's native method
+    # On mobile, show 2 columns; on desktop, show 5
+    is_mobile = st.session_state.get('mobile_view', False)
+    
+    # Show only 4 movies on mobile (2x2 grid)
+    if is_mobile:
+        display_recs = recommendations[:4]
+        num_cols = 2
+    else:
+        display_recs = recommendations[:5]
+        num_cols = 5
+    
+    cols = st.columns(num_cols, gap="small")
 
-    cols = st.columns(5, gap="small")
-
-    for idx, col in enumerate(cols):
-        if idx >= len(recommendations):
-            break
-
-        rec = recommendations[idx]
-        with col:
+    for idx, rec in enumerate(display_recs):
+        col_idx = idx % num_cols
+        with cols[col_idx]:
             st.markdown(
                 f"""
                 <div style="
@@ -525,6 +502,7 @@ def display_recommendations(recommendations):
                     cursor:pointer;
                     transition:transform 0.18s ease, box-shadow 0.18s ease;
                     box-shadow:0 4px 10px rgba(0,0,0,0.5);
+                    margin-bottom: 8px;
                 " onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.65)';"
                   onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 10px rgba(0,0,0,0.5)';">
                     <div style="position:relative;">
@@ -625,6 +603,38 @@ def display_recommendations(recommendations):
                 )
 
             st.markdown("</div></div>", unsafe_allow_html=True)
+
+# =========================================================
+# MOBILE DETECTION
+# =========================================================
+# Add a simple viewport width checker
+st.markdown("""
+    <script>
+    function updateMobileStatus() {
+        const isMobile = window.innerWidth <= 768;
+        window.parent.postMessage({
+            type: 'streamlit:setComponentValue',
+            value: isMobile
+        }, '*');
+    }
+    
+    updateMobileStatus();
+    window.addEventListener('resize', updateMobileStatus);
+    </script>
+""", unsafe_allow_html=True)
+
+# Try to detect mobile from user agent as fallback
+try:
+    from streamlit.web.server.websocket_headers import _get_websocket_headers
+    headers = _get_websocket_headers()
+    if headers and 'User-Agent' in headers:
+        user_agent = headers['User-Agent'].lower()
+        is_mobile = any(x in user_agent for x in ['mobile', 'android', 'iphone', 'ipad'])
+        st.session_state['mobile_view'] = is_mobile
+except:
+    # Default to desktop if detection fails
+    if 'mobile_view' not in st.session_state:
+        st.session_state['mobile_view'] = False
 
 # =========================================================
 # SIDEBAR
