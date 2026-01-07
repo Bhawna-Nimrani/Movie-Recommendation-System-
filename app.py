@@ -4,6 +4,7 @@ import pandas as pd
 import requests
 import os
 from urllib.parse import quote
+from streamlit_autorefresh import st_autorefresh  # ← YEH ADD KARO
 
 # =========================================================
 # CONFIG
@@ -18,6 +19,7 @@ st.set_page_config(
 # Get base directory for file paths (works locally and on cloud)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+count = st_autorefresh(interval=240000, limit=None, key="cinematch_keepalive")
 # =========================================================
 # DATA LOADERS
 # =========================================================
