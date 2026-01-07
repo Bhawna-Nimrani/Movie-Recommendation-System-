@@ -4,7 +4,6 @@ import pandas as pd
 import requests
 import os
 from urllib.parse import quote
-import time
 
 # =========================================================
 # CONFIG
@@ -18,18 +17,6 @@ st.set_page_config(
 
 # Get base directory for file paths (works locally and on cloud)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# =========================================================
-# KEEP-ALIVE MECHANISM (Session-based)
-# =========================================================
-if 'last_refresh' not in st.session_state:
-    st.session_state.last_refresh = time.time()
-
-# Auto-refresh after 4 minutes of inactivity
-current_time = time.time()
-if current_time - st.session_state.last_refresh > 240:
-    st.session_state.last_refresh = current_time
-    st.rerun()
 
 # =========================================================
 # DATA LOADERS
@@ -277,7 +264,7 @@ def recommend_bollywood(movie, filter_genre=None, year_filter="off", language_fi
     return recommendations
 
 # =========================================================
-# ENHANCED CSS + HEADER - PERFECT MOBILE RESPONSIVE
+# COMPACT CSS + HEADER
 # =========================================================
 st.markdown(
     """
@@ -410,164 +397,81 @@ st.markdown(
         font-weight: 700;
     }
 
-    /* CUSTOM MOVIE GRID - DESKTOP & MOBILE */
-    .movie-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 14px;
-        margin-top: 14px;
-    }
-
-    .movie-card {
-        background: #181818;
-        border-radius: 8px;
-        overflow: hidden;
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-    }
-
-    .movie-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.8);
-    }
-
-    .movie-card img {
-        width: 100%;
-        display: block;
-        aspect-ratio: 2/3;
-        object-fit: cover;
-    }
-
-    .movie-info {
-        padding: 8px 10px 10px 10px;
-    }
-
-    .movie-title {
-        color: #fff;
-        font-weight: 600;
-        font-size: 0.85rem;
-        line-height: 1.3;
-        margin-bottom: 4px;
-        max-height: 34px;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .movie-meta {
-        font-size: 0.7rem;
-        margin-bottom: 4px;
-        color: #808080;
-    }
-
-    .movie-rating {
-        background: rgba(255,255,255,0.05);
-        border: 1px solid #404040;
-        padding: 4px 6px;
-        border-radius: 4px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-align: center;
-        display: inline-block;
-    }
-
-    .badge {
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        background: rgba(0,0,0,0.9);
-        color: #e50914;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-weight: 700;
-        font-size: 0.65rem;
-    }
-
-    /* MOBILE RESPONSIVE */
     @media (max-width: 768px) {
-        .movie-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 10px !important;
-        }
-        
         .app-title { 
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             text-align: center;
         }
-        
         .app-subtitle { 
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-align: center;
         }
         
         .main .block-container { 
-            padding: 0.5rem 0.8rem;
+            padding: 0.5rem 0.6rem;
             max-width: 100%;
         }
         
         .stTabs [data-baseweb="tab"] {
-            font-size: 0.75rem;
-            padding: 6px 10px;
+            font-size: 0.7rem;
+            padding: 5px 8px;
         }
         
         h3 { 
-            font-size: 0.9rem;
-            margin: 4px 0;
+            font-size: 0.85rem;
+            margin: 3px 0;
         }
         
         .stSelectbox label { 
             font-size: 0.7rem;
+            margin-bottom: 1px;
         }
         
         .stSelectbox > div > div { 
             font-size: 0.75rem;
-            padding: 4px 6px;
-            min-height: 32px;
+            padding: 3px 6px;
+            min-height: 30px;
         }
         
         .stButton > button {
             font-size: 0.75rem;
-            padding: 5px 8px;
-            min-height: 32px;
+            padding: 4px 8px;
+            min-height: 30px;
         }
         
         .stSuccess {
-            font-size: 0.72rem;
-            padding: 5px 7px;
-            margin: 6px 0;
+            font-size: 0.7rem;
+            padding: 4px 6px;
+            margin: 5px 0;
         }
         
         .stWarning {
-            font-size: 0.72rem;
-            padding: 5px 7px;
-        }
-
-        .movie-title {
-            font-size: 0.78rem;
-        }
-
-        .movie-meta {
-            font-size: 0.65rem;
-        }
-
-        .movie-rating {
-            font-size: 0.65rem;
-            padding: 3px 5px;
-        }
-
-        .badge {
-            font-size: 0.6rem;
-            padding: 3px 6px;
+            font-size: 0.7rem;
+            padding: 4px 6px;
         }
     }
 
-    /* TABLET */
-    @media (min-width: 769px) and (max-width: 1024px) {
-        .movie-grid {
-            grid-template-columns: repeat(3, 1fr) !important;
-            gap: 12px !important;
+    /* Force 2 columns on mobile - using container query */
+    @media (max-width: 768px) {
+        /* Force horizontal layout to wrap into 2 columns */
+        [data-testid="stHorizontalBlock"] {
+            flex-wrap: wrap !important;
+            gap: 8px !important;
+        }
+        
+        [data-testid="column"] {
+            width: calc(50% - 4px) !important;
+            flex: 0 0 calc(50% - 4px) !important;
+            min-width: calc(50% - 4px) !important;
+            max-width: calc(50% - 4px) !important;
+        }
+
+        [data-testid="column"]:nth-child(n+5) {
+            display: none !important;
+        }
+        
+        .element-container {
+            width: 100% !important;
         }
     }
     </style>
@@ -586,115 +490,141 @@ st.markdown(
 )
 
 # =========================================================
-# IMPROVED CARD DISPLAY - STREAMLIT COLUMNS
+# CARD DISPLAY (SMALLER POSTERS / TIGHTER CARDS)
 # =========================================================
 def display_recommendations(recommendations):
     if not recommendations:
         st.warning("⚠️ No recommendations found. Try different filters.")
         return
 
-    st.success(f"✨ Top {len(recommendations)} Recommendations")
+    st.success(f"Top {len(recommendations)} Recommendations")
 
-    # Use Streamlit columns - better than HTML grid for mobile
-    cols = st.columns(5, gap="medium")
-    
-    for idx, rec in enumerate(recommendations):
-        with cols[idx % 5]:
-            # Movie card container
-            rating = rec.get("rating")
-            
-            # Rating badge color
-            if rating:
-                if rating >= 8:
-                    rating_color = "#46d369"
-                    rating_border = rating_color
-                elif rating >= 7:
-                    rating_color = "#f59e0b"
-                    rating_border = rating_color
-                elif rating >= 6:
-                    rating_color = "#f97316"
-                    rating_border = rating_color
-                else:
-                    rating_color = "#808080"
-                    rating_border = "#404040"
-                rating_text = f"⭐ {rating}/10"
-            else:
-                rating_color = "#808080"
-                rating_border = "#404040"
-                rating_text = "Not Rated"
-            
-            # Meta info
-            meta_parts = []
-            if rec.get("year"):
-                meta_parts.append(f"🗓️ {rec['year']}")
-            if rec.get("genres"):
-                meta_parts.append(f"🎭 {rec['genres'][0]}")
-            meta_text = " • ".join(meta_parts) if meta_parts else ""
-            
-            # Display card with better mobile support
+    # Mobile detection script
+    st.markdown("""
+        <script>
+        function checkMobile() {
+            return window.innerWidth <= 768;
+        }
+        </script>
+    """, unsafe_allow_html=True)
+
+    cols = st.columns(5, gap="small")
+
+    for idx, col in enumerate(cols):
+        if idx >= len(recommendations):
+            break
+
+        rec = recommendations[idx]
+        with col:
             st.markdown(
                 f"""
                 <div style="
-                    background: #181818;
-                    border-radius: 8px;
-                    overflow: hidden;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-                    transition: transform 0.2s ease;
-                    margin-bottom: 8px;
-                " onmouseover="this.style.transform='translateY(-4px)'"
-                  onmouseout="this.style.transform='none'">
-                    <div style="position: relative;">
+                    background:#181818;
+                    border-radius:6px;
+                    overflow:hidden;
+                    cursor:pointer;
+                    transition:transform 0.18s ease, box-shadow 0.18s ease;
+                    box-shadow:0 4px 10px rgba(0,0,0,0.5);
+                " onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.65)';"
+                  onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 10px rgba(0,0,0,0.5)';">
+                    <div style="position:relative;">
                         <img src="{rec['poster']}" style="
-                            width: 100%;
-                            display: block;
+                            width:100%;
+                            display:block;
                             aspect-ratio: 2/3;
-                            object-fit: cover;
-                        "/>
+                            object-fit:cover;
+                        " />
                         <div style="
-                            position: absolute;
-                            top: 8px;
-                            left: 8px;
-                            background: rgba(0,0,0,0.9);
-                            color: #e50914;
-                            padding: 4px 8px;
-                            border-radius: 4px;
-                            font-weight: 700;
-                            font-size: 0.7rem;
+                            position:absolute;
+                            top:6px;
+                            left:6px;
+                            background:rgba(0,0,0,0.85);
+                            color:#e50914;
+                            padding:3px 7px;
+                            border-radius:3px;
+                            font-weight:700;
+                            font-size:0.6rem;
                         ">#{idx+1}</div>
                     </div>
-                    <div style="padding: 8px 10px 10px 10px;">
+                    <div style="padding:6px 7px 7px 7px;">
                         <div style="
-                            color: #fff;
-                            font-weight: 600;
-                            font-size: 0.85rem;
-                            line-height: 1.3;
-                            margin-bottom: 4px;
-                            max-height: 34px;
-                            overflow: hidden;
-                            display: -webkit-box;
-                            -webkit-line-clamp: 2;
-                            -webkit-box-orient: vertical;
+                            color:#fff;
+                            font-weight:600;
+                            font-size:0.78rem;
+                            line-height:1.25;
+                            margin-bottom:3px;
+                            max-height:30px;
+                            display:-webkit-box;
+                            -webkit-line-clamp:2;
+                            -webkit-box-orient:vertical;
+                            overflow:hidden;
                         ">{rec['title']}</div>
-                        <div style="
-                            font-size: 0.7rem;
-                            color: #808080;
-                            margin-bottom: 4px;
-                        ">{meta_text}</div>
-                        <div style="
-                            background: rgba(255,255,255,0.05);
-                            border: 1px solid {rating_border};
-                            color: {rating_color};
-                            padding: 4px 6px;
-                            border-radius: 4px;
-                            font-size: 0.7rem;
-                            font-weight: 700;
-                            text-align: center;
-                        ">{rating_text}</div>
-                    </div>
-                </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
+
+            meta = []
+            if rec.get("year"):
+                meta.append(f"<span style='color:#46d369;'>{rec['year']}</span>")
+            if rec.get("genres"):
+                meta.append(f"<span style='color:#808080;'>{rec['genres'][0]}</span>")
+
+            if meta:
+                st.markdown(
+                    f"<div style='font-size:0.65rem;margin-bottom:3px;'>{' • '.join(meta)}</div>",
+                    unsafe_allow_html=True,
+                )
+
+            rating = rec.get("rating")
+            if rating:
+                if rating >= 8:
+                    color = "#46d369"
+                elif rating >= 7:
+                    color = "#f59e0b"
+                elif rating >= 6:
+                    color = "#f97316"
+                else:
+                    color = "#808080"
+
+                st.markdown(
+                    f"""
+                    <div style="
+                        background:rgba(255,255,255,0.03);
+                        border:1px solid {color};
+                        color:{color};
+                        padding:3px 5px;
+                        border-radius:3px;
+                        font-size:0.68rem;
+                        font-weight:700;
+                        text-align:center;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        gap:4px;
+                    ">
+                        <span>⭐</span><span>{rating}/10</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.markdown(
+                    """
+                    <div style="
+                        background:rgba(255,255,255,0.03);
+                        border:1px solid #404040;
+                        color:#808080;
+                        padding:3px 5px;
+                        border-radius:3px;
+                        font-size:0.68rem;
+                        font-weight:600;
+                        text-align:center;
+                    ">Not Rated</div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+            st.markdown("</div></div>", unsafe_allow_html=True)
 
 # =========================================================
 # SIDEBAR
@@ -707,10 +637,6 @@ with st.sidebar:
     with col2:
         if bollywood_movies is not None:
             st.metric("Bollywood", f"{len(bollywood_movies):,}")
-    
-    # Keep-alive indicator
-    st.markdown("---")
-    st.markdown(f"🟢 **Active** • {time.strftime('%H:%M:%S')}")
 
 # =========================================================
 # TABS
@@ -741,8 +667,7 @@ with tabs[0]:
         btn = st.button("Get Recommendations", key="hw_btn")
 
     if btn:
-        st.session_state.last_refresh = time.time()  # Update activity time
-        with st.spinner("🎬 Finding perfect movies..."):
+        with st.spinner("Finding movies..."):
             recs = recommend_hollywood(selected)
         display_recommendations(recs)
 
@@ -803,8 +728,7 @@ if bollywood_movies is not None and len(tabs) > 1:
                     )
 
             if click:
-                st.session_state.last_refresh = time.time()  # Update activity time
-                with st.spinner("🎬 Finding perfect movies..."):
+                with st.spinner("Finding movies..."):
                     recs = recommend_bollywood(
                         sel,
                         genre if genre != "All" else None,
@@ -839,8 +763,8 @@ if bollywood_movies is not None and len(tabs) > 1:
 st.markdown("<br>", unsafe_allow_html=True)
 st.markdown(
     """
-    <div style="text-align: center; padding: 10px; border-top: 1px solid #2a2a2a; color: #808080; font-size: 0.8rem;">
-        Made with ❤️ by Your Name • Powered by TMDb & OMDb
+    <div style="text-align: center; padding: 8px; border-top: 1px solid #2a2a2a; color: #808080; font-size: 0.8rem;">
+        Made with ❤️ • Powered by TMDb & OMDb
     </div>
     """,
     unsafe_allow_html=True,
